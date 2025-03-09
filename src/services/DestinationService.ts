@@ -8,11 +8,16 @@ interface Destination {
 
 export class DestinationService {
   private static BASE_URL = "https://nominatim.openstreetmap.org/search";
+  private static requestCounter = 0;
   
   static async searchDestinations(query: string): Promise<Destination[]> {
-    if (!query || query.trim().length < 2) {
+    // Only search if query is at least 3 characters
+    if (!query || query.trim().length < 3) {
       return [];
     }
+    
+    // Create a unique request ID to track the latest request
+    const requestId = ++this.requestCounter;
     
     try {
       // Build the API request URL with parameters
@@ -39,6 +44,12 @@ export class DestinationService {
       });
       
       clearTimeout(timeoutId);
+      
+      // Check if this is still the most recent request
+      if (requestId !== this.requestCounter) {
+        console.log("Discarding outdated search results");
+        return [];
+      }
       
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin, Loader2 } from 'lucide-react';
@@ -22,6 +22,8 @@ const DestinationStep: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<Destination[]>([]);
   const [open, setOpen] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const currentSearchTerm = useRef<string>('');
   
   // Popular destinations for quick selection
   const popularDestinations = [
@@ -37,32 +39,62 @@ const DestinationStep: React.FC = () => {
     setInputValue(destination);
     updateDestination(destination);
     setOpen(false);
+    // Clear any pending searches
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
   };
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
-    if (value.length >= 2) {
-      searchDestinations(value);
+    currentSearchTerm.current = value;
+    
+    // Cancel any pending searches
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // Only search if input has 3 or more characters
+    if (value.length >= 3) {
+      setIsSearching(true);
+      
+      // Throttle API calls with a 300ms delay
+      searchTimeoutRef.current = setTimeout(() => {
+        // Only proceed if this is still the current search term
+        if (value === currentSearchTerm.current) {
+          searchDestinations(value);
+        }
+      }, 300);
     } else {
       setSearchResults([]);
+      setIsSearching(false);
     }
   };
 
   const searchDestinations = async (query: string) => {
-    setIsSearching(true);
+    // Store this search term to compare when results return
+    const searchTerm = query;
+    
     try {
       const results = await DestinationService.searchDestinations(query);
-      setSearchResults(results);
+      
+      // Only update results if this is still the current search term
+      if (searchTerm === currentSearchTerm.current) {
+        setSearchResults(results);
+        setIsSearching(false);
+      }
     } catch (error) {
       console.error("Error searching destinations:", error);
-      toast({
-        title: "Search failed",
-        description: "Could not search destinations. Please try again later.",
-        variant: "destructive"
-      });
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
+      // Only show toast if this is still the current search
+      if (searchTerm === currentSearchTerm.current) {
+        toast({
+          title: "Search failed",
+          description: "Could not search destinations. Please try again later.",
+          variant: "destructive"
+        });
+        setSearchResults([]);
+        setIsSearching(false);
+      }
     }
   };
 
@@ -72,6 +104,15 @@ const DestinationStep: React.FC = () => {
       updateDestination(inputValue);
     }
   };
+
+  // Cancel any pending searches when component unmounts
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -95,7 +136,7 @@ const DestinationStep: React.FC = () => {
                 value={inputValue}
                 onChange={(e) => handleInputChange(e.target.value)}
                 onBlur={handleInputCommit}
-                onClick={() => inputValue.length >= 2 && setOpen(true)}
+                onClick={() => inputValue.length >= 3 && setOpen(true)}
               />
             </div>
           </PopoverTrigger>
@@ -126,7 +167,7 @@ const DestinationStep: React.FC = () => {
                     ))}
                   </CommandGroup>
                 )}
-                {!isSearching && inputValue.length >= 2 && searchResults.length === 0 && (
+                {!isSearching && inputValue.length >= 3 && searchResults.length === 0 && (
                   <div className="py-6 text-center">
                     <p className="text-sm text-muted-foreground">No destinations found</p>
                   </div>
