@@ -27,7 +27,7 @@ interface GeminiCompletionResponse {
 }
 
 export class GeminiService {
-  private static API_KEY = "dummy_gemini_api_key"; // Replace with actual API key in production
+  private static API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
   private static API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
   
   static async generateItinerary(travelDetails: {
@@ -41,8 +41,11 @@ export class GeminiService {
   }) {
     try {
       const systemPrompt = `You are a knowledgeable travel assistant that creates detailed travel itineraries. 
-      Make recommendations based on the location, duration, trip style, and budget level.
+      Make recommendations based on the location, duration, trip style, and budget level. 
+      Let me know in detail what each day and within the day what each activity will look like. 
+      Also recomment local cusinies, activities, etc.
       Structure your response as a JSON object that follows this exact format:
+      [Note]: stricly follow this format for response
       {
         "itinerary": [
           {
@@ -67,12 +70,8 @@ export class GeminiService {
       const requestData: GeminiCompletionRequest = {
         contents: [
           {
-            role: "system",
-            parts: [{ text: systemPrompt }]
-          },
-          {
             role: "user",
-            parts: [{ text: userPrompt }]
+            parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }]
           }
         ],
         generationConfig: {
@@ -86,20 +85,21 @@ export class GeminiService {
 
       // Simulate API call for now
       // In production, this would be a real fetch call:
-      // const response = await fetch(`${this.API_URL}?key=${this.API_KEY}`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json"
-      //   },
-      //   body: JSON.stringify(requestData)
-      // });
-      // const data = await response.json();
-
-      // Instead, simulate a response for development
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
-      
-      // Create a sample response based on the travel details
-      return this.createSampleItinerary(travelDetails);
+      const response = await fetch(`${this.API_URL}?key=${this.API_KEY}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestData)
+      });
+      const data = await response.json();
+      const responseText = data.candidates[0].content.parts[0].text;
+      const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/);
+      if (!jsonMatch) {
+        throw new Error("Failed to parse itinerary JSON from response");
+      }
+      const parsedItinerary = JSON.parse(jsonMatch[1]);
+      return parsedItinerary; 
     } catch (error) {
       console.error("Error calling Gemini API:", error);
       throw new Error("Failed to generate itinerary");
