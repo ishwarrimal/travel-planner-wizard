@@ -46,7 +46,7 @@ export class GeminiService {
       Also recomment local cusinies, activities, etc.
       Please ensure the JSON response is complete and properly formatted. The response should end with proper closing brackets for all objects and arrays.
       Structure your response as a JSON object that follows this exact format:
-      [Note]: stricly follow this format for response
+      [Note]: Please ensure your response is a valid JSON object with this exact structure:
       {
         "itinerary": [
           {
@@ -64,7 +64,8 @@ export class GeminiService {
             ]
           }
         ]
-      }`;
+      }
+      Do not include any additional text or markdown formatting.`;
 
       const userPrompt = `Create a detailed ${travelDetails.numberOfDays}-day itinerary for a ${travelDetails.tripStyle} trip to ${travelDetails.destination} with a ${travelDetails.budgetLevel} budget. The trip starts on ${travelDetails.startDate.toISOString().split('T')[0]} and ends on ${travelDetails.endDate.toISOString().split('T')[0]}.${travelDetails.interests.length > 0 ? ` The traveler is interested in: ${travelDetails.interests.join(', ')}.` : ''}`;
 
