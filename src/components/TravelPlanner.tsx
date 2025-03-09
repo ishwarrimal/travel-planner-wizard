@@ -28,7 +28,7 @@ const wizardSteps = [
   },
   {
     title: 'Budget',
-    description: 'What's your budget level?',
+    description: "What's your budget level?",
     component: BudgetStep
   },
   {
