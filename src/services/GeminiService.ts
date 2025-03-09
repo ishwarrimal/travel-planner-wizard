@@ -1,33 +1,34 @@
 
-interface QwenMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-}
-
-interface QwenCompletionRequest {
-  model: string;
-  messages: QwenMessage[];
-  temperature?: number;
-  top_p?: number;
-  max_tokens?: number;
-}
-
-interface QwenCompletionResponse {
-  id: string;
-  choices: {
-    message: QwenMessage;
-    finish_reason: string;
+interface GeminiMessage {
+  role: 'user' | 'model' | 'system';
+  parts: {
+    text: string;
   }[];
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
+}
+
+interface GeminiCompletionRequest {
+  contents: GeminiMessage[];
+  generationConfig?: {
+    temperature?: number;
+    topP?: number;
+    maxOutputTokens?: number;
   };
 }
 
-export class QwenService {
-  private static API_KEY = "dummy_qwen_api_key"; // Replace with actual API key in production
-  private static API_URL = "https://api.qwen.ai/v1/chat/completions";
+interface GeminiCompletionResponse {
+  candidates: {
+    content: {
+      parts: {
+        text: string;
+      }[];
+    };
+    finishReason: string;
+  }[];
+}
+
+export class GeminiService {
+  private static API_KEY = "dummy_gemini_api_key"; // Replace with actual API key in production
+  private static API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
   
   static async generateItinerary(travelDetails: {
     destination: string;
@@ -63,26 +64,32 @@ export class QwenService {
 
       const userPrompt = `Create a detailed ${travelDetails.numberOfDays}-day itinerary for a ${travelDetails.tripStyle} trip to ${travelDetails.destination} with a ${travelDetails.budgetLevel} budget. The trip starts on ${travelDetails.startDate.toISOString().split('T')[0]} and ends on ${travelDetails.endDate.toISOString().split('T')[0]}.${travelDetails.interests.length > 0 ? ` The traveler is interested in: ${travelDetails.interests.join(', ')}.` : ''}`;
 
-      const requestData: QwenCompletionRequest = {
-        model: "qwen2.5-72b",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
+      const requestData: GeminiCompletionRequest = {
+        contents: [
+          {
+            role: "system",
+            parts: [{ text: systemPrompt }]
+          },
+          {
+            role: "user",
+            parts: [{ text: userPrompt }]
+          }
         ],
-        temperature: 0.7,
-        max_tokens: 2500,
-        top_p: 0.95
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 2500,
+          topP: 0.95
+        }
       };
 
-      console.log("Sending request to Qwen API:", requestData);
+      console.log("Sending request to Gemini API:", requestData);
 
       // Simulate API call for now
       // In production, this would be a real fetch call:
-      // const response = await fetch(this.API_URL, {
+      // const response = await fetch(`${this.API_URL}?key=${this.API_KEY}`, {
       //   method: "POST",
       //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Authorization": `Bearer ${this.API_KEY}`
+      //     "Content-Type": "application/json"
       //   },
       //   body: JSON.stringify(requestData)
       // });
@@ -94,7 +101,7 @@ export class QwenService {
       // Create a sample response based on the travel details
       return this.createSampleItinerary(travelDetails);
     } catch (error) {
-      console.error("Error calling Qwen API:", error);
+      console.error("Error calling Gemini API:", error);
       throw new Error("Failed to generate itinerary");
     }
   }

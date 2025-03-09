@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { QwenService } from '@/services/QwenService';
+import { GeminiService } from '@/services/GeminiService';
 
 export type TripStyle = 'adventure' | 'leisure' | 'romance' | 'culture' | 'family';
 export type BudgetLevel = 'budget' | 'moderate' | 'luxury';
@@ -99,15 +99,15 @@ export const TravelPlanProvider: React.FC<{ children: ReactNode }> = ({ children
     setTravelPlan(prev => ({ ...prev, interests }));
   };
 
-  // Use QwenService to generate itinerary
+  // Use GeminiService to generate itinerary
   const generateItinerary = async () => {
     if (!travelPlan.startDate || !travelPlan.endDate) return;
     
     setIsGenerating(true);
 
     try {
-      // Call QwenService to generate itinerary
-      const result = await QwenService.generateItinerary({
+      // Call GeminiService to generate itinerary
+      const result = await GeminiService.generateItinerary({
         destination: travelPlan.destination,
         numberOfDays: travelPlan.numberOfDays,
         tripStyle: travelPlan.tripStyle,
