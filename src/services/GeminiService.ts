@@ -42,8 +42,9 @@ export class GeminiService {
     try {
       const systemPrompt = `You are a knowledgeable travel assistant that creates detailed travel itineraries. 
       Make recommendations based on the location, duration, trip style, and budget level. 
-      Let me know in detail what each day and within the day what each activity will look like. 
+      Let me know in semi-detail what each day and within the day what each activity will look like, but don't exhaust the response limit and don't break the json.
       Also recomment local cusinies, activities, etc.
+      Please ensure the JSON response is complete and properly formatted. The response should end with proper closing brackets for all objects and arrays.
       Structure your response as a JSON object that follows this exact format:
       [Note]: stricly follow this format for response
       {
