@@ -7,6 +7,7 @@ import { useTravelPlan } from '@/contexts/TravelPlanContext';
 import { DestinationService } from '@/services/DestinationService';
 import { Command, CommandGroup, CommandItem, CommandList, CommandInput } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { toast } from "@/components/ui/use-toast";
 
 interface Destination {
   id: string;
@@ -54,6 +55,11 @@ const DestinationStep: React.FC = () => {
       setSearchResults(results);
     } catch (error) {
       console.error("Error searching destinations:", error);
+      toast({
+        title: "Search failed",
+        description: "Could not search destinations. Please try again later.",
+        variant: "destructive"
+      });
       setSearchResults([]);
     } finally {
       setIsSearching(false);
