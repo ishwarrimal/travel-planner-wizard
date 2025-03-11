@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useTravelPlan } from '@/contexts/TravelPlanContext';
+import { TravelPlan, useTravelPlan } from '@/contexts/TravelPlanContext';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,7 +24,37 @@ const ItineraryStep: React.FC = () => {
     }
   }, []);
   
-  const ActivityCard: React.FC<{ activity: ItineraryActivity }> = ({ activity }) => {
+  const ActivityCard: React.FC<{ activity: ItineraryActivity, day: TravelPlan }> = ({ activity, day }) => {
+    const getBookingButton = () => {
+      if (activity.category === 'accommodation') {
+        const searchQuery = encodeURIComponent(`${activity.title} ${activity.location}`);
+        return (
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="mt-2"
+            onClick={() => window.open(`https://www.booking.com/search.html?ss=${searchQuery}&checkin=${day.startDate}&checkout=${day.endDate}`, '_blank')}
+          >
+            Book Hotel
+          </Button>
+        );
+      }
+      if (activity.category.includes('transportation')) {
+        const type = activity.category.split('-')[1]
+        return (
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="mt-2"
+            onClick={() => window.open('https://www.skyscanner.com', '_blank')}
+          >
+            Book {type}
+          </Button>
+        );
+      }
+      return null;
+    };
+
     return (
       <Card className="mb-4 overflow-hidden">
         <CardContent className="p-0">
@@ -40,7 +70,7 @@ const ItineraryStep: React.FC = () => {
                 <h3 className="font-medium">{activity.title}</h3>
                 {activity.cost && (
                   <span className="text-sm font-medium text-muted-foreground">
-                    {activity.cost}
+                    {activity.cost} (approx)
                   </span>
                 )}
               </div>
@@ -60,6 +90,8 @@ const ItineraryStep: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {getBookingButton()}
             </div>
           </div>
         </CardContent>
@@ -206,7 +238,7 @@ const ItineraryStep: React.FC = () => {
             
             <div className="space-y-1">
               {day.activities.map((activity, index) => (
-                <ActivityCard key={`activity-${index}`} activity={activity} />
+                <ActivityCard key={`activity-${index}`} activity={activity} day={day} />
               ))}
             </div>
           </TabsContent>

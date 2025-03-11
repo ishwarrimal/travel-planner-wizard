@@ -47,7 +47,7 @@ export class GeminiService {
       Let me know in semi-detail what each day and within the day what each activity will look like, but don't exhaust the response limit and don't break the json.
       For ultra_budget options, prioritize cost-saving over time (e.g., public transport, longer routes).
       For smart_budget options, balance cost with time efficiency (e.g., budget flights when time-saving).
-      Also recommend local cuisines, activities, etc.
+      Also recommend local cuisines, activities, approximate cost, etc.
       Please ensure the JSON response is complete and properly formatted. The response should end with proper closing brackets for all objects and arrays.
       Structure your response as a JSON object that follows this exact format:
       [Note]: Please ensure your response is a valid JSON object with this exact structure:
@@ -62,8 +62,8 @@ export class GeminiService {
                 "title": "Activity Title",
                 "description": "Detailed description",
                 "location": "Location name",
-                "cost": "$" (budget), "$$" (moderate), or "$$$" (luxury),
-                "category": "food", "activity", "transportation", "accommodation", or "free-time"
+                "cost": "10$", "120$", 
+                "category": "food", "activity", "transportation-train", "transportation-flight", "transportation-cab", "transportation-bus", "accommodation", or "free-time",
               }
             ]
           }
