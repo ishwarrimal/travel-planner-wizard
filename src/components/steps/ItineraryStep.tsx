@@ -1,10 +1,9 @@
-
 import React, { useEffect } from 'react';
 import { useTravelPlan } from '@/contexts/TravelPlanContext';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, MapPin, Coffee, UtensilsCrossed, Car, Bed, Clock, DollarSign } from 'lucide-react';
+import { Loader2, MapPin, Coffee, UtensilsCrossed, Car, Bed, Clock, DollarSign, Share2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ItineraryActivity } from '@/contexts/TravelPlanContext';
 
@@ -68,6 +67,35 @@ const ItineraryStep: React.FC = () => {
     );
   };
   
+  const formatItineraryForShare = () => {
+    let message = `*** My Amazing Travel Itinerary ***\n\n`;
+    message += `${travelPlan.numberOfDays}-day ${travelPlan.tripStyle} trip to ${travelPlan.destination}\n`;
+    message += `Budget: ${travelPlan.budgetLevel}\n\n`;
+    
+    travelPlan.itinerary.forEach(day => {
+      message += `DAY ${day.day} - ${format(day.date, 'EEEE, MMMM d, yyyy')}\n`;
+      message += `-----------------\n`;
+      day.activities.forEach(activity => {
+        message += `* ${activity.time} - ${activity.title}\n`;
+        if (activity.location) message += `  - Location: ${activity.location}\n`;
+        if (activity.cost) message += `  - Cost: ${activity.cost}\n`;
+        message += '\n';
+      });
+    });
+
+    message += `=================\n`;
+    message += `Plan your own perfect trip at TripPlanner.ai!\n`;
+    message += `Create personalized AI-powered itineraries in seconds.\n`;
+    message += `Visit: https://tripplanner.ai\n`;
+
+    return encodeURIComponent(message);
+  };
+
+  const shareViaWhatsApp = () => {
+    const formattedMessage = formatItineraryForShare();
+    window.open(`https://wa.me/?text=${formattedMessage}`, '_blank');
+  };
+
   if (error) {
     return (
       <div className="h-96 flex flex-col items-center justify-center animate-fadeIn">
@@ -125,12 +153,23 @@ const ItineraryStep: React.FC = () => {
   
   return (
     <div className="space-y-6 animate-fadeIn">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">Your {travelPlan.numberOfDays}-Day Itinerary</h2>
-        <p className="text-muted-foreground">
-          {travelPlan.tripStyle.charAt(0).toUpperCase() + travelPlan.tripStyle.slice(1)} trip to {travelPlan.destination} 
-          with a {travelPlan.budgetLevel} budget.
-        </p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Your {travelPlan.numberOfDays}-Day Itinerary</h2>
+          <p className="text-muted-foreground">
+            {travelPlan.tripStyle.charAt(0).toUpperCase() + travelPlan.tripStyle.slice(1)} trip to {travelPlan.destination} 
+            with a {travelPlan.budgetLevel} budget.
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={shareViaWhatsApp}
+        >
+          <Share2 className="h-4 w-4" />
+          Share via WhatsApp
+        </Button>
       </div>
       
       <Tabs defaultValue={`day-1`} className="w-full">
