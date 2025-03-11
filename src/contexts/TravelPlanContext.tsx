@@ -1,13 +1,15 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { GeminiService } from '@/services/GeminiService';
 
-export type TripStyle = 'adventure' | 'leisure' | 'romance' | 'culture' | 'family';
-export type BudgetLevel = 'budget' | 'moderate' | 'luxury';
+export type TripStyle = 'sightseeing' | 'adventure' | 'nature' | 'beach' | 'culture' | 'food' | 'wine' | 'shopping' | 'luxury' | 'camping' | 'wellness' | 'romance' | 'family' | 'budget';
+export type BudgetLevel = 'ultra_budget' | 'smart_budget' | 'moderate' | 'luxury';
 
 export interface TravelPlan {
   destination: string;
   startDate: Date | undefined;
   endDate: Date | undefined;
+  arrivalTime?: string;
+  departureTime?: string;
   numberOfDays: number;
   tripStyle: TripStyle;
   budgetLevel: BudgetLevel;
@@ -33,7 +35,12 @@ export interface ItineraryActivity {
 interface TravelPlanContextType {
   travelPlan: TravelPlan;
   updateDestination: (destination: string) => void;
-  updateDates: (startDate: Date | undefined, endDate: Date | undefined) => void;
+  updateDates: (
+    startDate: Date | undefined, 
+    endDate: Date | undefined,
+    arrivalTime?: string,
+    departureTime?: string
+  ) => void;
   updateTripStyle: (style: TripStyle) => void;
   updateBudgetLevel: (level: BudgetLevel) => void;
   updateInterests: (interests: string[]) => void;
@@ -51,8 +58,10 @@ const defaultTravelPlan: TravelPlan = {
   destination: '',
   startDate: undefined,
   endDate: undefined,
+  arrivalTime: undefined,
+  departureTime: undefined,
   numberOfDays: 0,
-  tripStyle: 'leisure',
+  tripStyle: 'sightseeing',
   budgetLevel: 'moderate',
   interests: [],
   itinerary: [],
@@ -70,13 +79,20 @@ export const TravelPlanProvider: React.FC<{ children: ReactNode }> = ({ children
     setTravelPlan(prev => ({ ...prev, destination }));
   };
 
-  const updateDates = (startDate: Date | undefined, endDate: Date | undefined) => {
+  const updateDates = (
+    startDate: Date | undefined, 
+    endDate: Date | undefined,
+    arrivalTime?: string,
+    departureTime?: string
+  ) => {
     if (startDate && endDate) {
       const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
       setTravelPlan(prev => ({ 
         ...prev, 
         startDate, 
         endDate, 
+        arrivalTime,
+        departureTime,
         numberOfDays: daysDiff 
       }));
     } else {
@@ -84,6 +100,8 @@ export const TravelPlanProvider: React.FC<{ children: ReactNode }> = ({ children
         ...prev, 
         startDate, 
         endDate,
+        arrivalTime: undefined,
+        departureTime: undefined,
         numberOfDays: 0
       }));
     }
@@ -115,6 +133,8 @@ export const TravelPlanProvider: React.FC<{ children: ReactNode }> = ({ children
         budgetLevel: travelPlan.budgetLevel,
         startDate: travelPlan.startDate,
         endDate: travelPlan.endDate,
+        arrivalTime: travelPlan.arrivalTime,
+        departureTime: travelPlan.departureTime,
         interests: travelPlan.interests
       });
       

@@ -1,4 +1,3 @@
-
 interface GeminiMessage {
   role: 'user' | 'model' | 'system';
   parts: {
@@ -37,13 +36,18 @@ export class GeminiService {
     budgetLevel: string;
     startDate: Date;
     endDate: Date;
+    arrivalTime?: string;
+    departureTime?: string;
     interests: string[];
   }) {
     try {
       const systemPrompt = `You are a knowledgeable travel assistant that creates detailed travel itineraries. 
-      Make recommendations based on the location, duration, trip style, and budget level. 
+      Make recommendations based on the location, duration, trip style, and budget level.
+      Consider arrival and departure times when planning the first and last day activities.
       Let me know in semi-detail what each day and within the day what each activity will look like, but don't exhaust the response limit and don't break the json.
-      Also recomment local cusinies, activities, etc.
+      For ultra_budget options, prioritize cost-saving over time (e.g., public transport, longer routes).
+      For smart_budget options, balance cost with time efficiency (e.g., budget flights when time-saving).
+      Also recommend local cuisines, activities, etc.
       Please ensure the JSON response is complete and properly formatted. The response should end with proper closing brackets for all objects and arrays.
       Structure your response as a JSON object that follows this exact format:
       [Note]: Please ensure your response is a valid JSON object with this exact structure:
@@ -54,7 +58,7 @@ export class GeminiService {
             "date": "YYYY-MM-DD",
             "activities": [
               {
-                "time": "08:00 AM",
+                "time": "HH:mm",
                 "title": "Activity Title",
                 "description": "Detailed description",
                 "location": "Location name",
@@ -67,7 +71,19 @@ export class GeminiService {
       }
       Do not include any additional text or markdown formatting.`;
 
-      const userPrompt = `Create a detailed ${travelDetails.numberOfDays}-day itinerary for a ${travelDetails.tripStyle} trip to ${travelDetails.destination} with a ${travelDetails.budgetLevel} budget. The trip starts on ${travelDetails.startDate.toISOString().split('T')[0]} and ends on ${travelDetails.endDate.toISOString().split('T')[0]}.${travelDetails.interests.length > 0 ? ` The traveler is interested in: ${travelDetails.interests.join(', ')}.` : ''}`;
+      const arrivalInfo = travelDetails.arrivalTime 
+        ? `Arrival on the first day is at ${travelDetails.arrivalTime}.` 
+        : '';
+      const departureInfo = travelDetails.departureTime 
+        ? `Departure on the last day is at ${travelDetails.departureTime}.` 
+        : '';
+
+      const userPrompt = `Create a detailed ${travelDetails.numberOfDays}-day itinerary for a ${travelDetails.tripStyle} trip to ${travelDetails.destination} with a ${travelDetails.budgetLevel} budget. 
+      The trip starts on ${travelDetails.startDate.toISOString().split('T')[0]} and ends on ${travelDetails.endDate.toISOString().split('T')[0]}. 
+      ${arrivalInfo} ${departureInfo}
+      ${travelDetails.interests.length > 0 ? `The traveler is interested in: ${travelDetails.interests.join(', ')}.` : ''}
+      ${travelDetails.budgetLevel === 'ultra_budget' ? 'Please prioritize cost-saving options over time efficiency.' : ''}
+      ${travelDetails.budgetLevel === 'smart_budget' ? 'Please balance cost with time efficiency, choosing budget-friendly but time-saving options when reasonable.' : ''}`;
 
       const requestData: GeminiCompletionRequest = {
         contents: [

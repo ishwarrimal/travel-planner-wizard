@@ -1,8 +1,18 @@
-
 import React from 'react';
 import { useTravelPlan } from '@/contexts/TravelPlanContext';
 import { TripStyle } from '@/contexts/TravelPlanContext';
-import { Compass, Palmtree, Heart, Building, Users } from 'lucide-react';
+import { 
+  Compass, 
+  Heart, 
+  Users, 
+  Crown,
+  UtensilsCrossed, 
+  Camera, 
+  Mountain, 
+  ShoppingBag, 
+  Landmark,
+  Waves
+} from 'lucide-react';
 
 interface TripStyleOption {
   value: TripStyle;
@@ -16,16 +26,52 @@ const TripStyleStep: React.FC = () => {
   
   const tripStyleOptions: TripStyleOption[] = [
     {
+      value: 'sightseeing',
+      label: 'Sightseeing',
+      icon: <Camera className="h-6 w-6" />,
+      description: 'Popular attractions, landmarks, and photo opportunities.'
+    },
+    {
       value: 'adventure',
       label: 'Adventure',
       icon: <Compass className="h-6 w-6" />,
       description: 'Outdoor activities, thrills, and exploration.'
     },
     {
-      value: 'leisure',
-      label: 'Leisure',
-      icon: <Palmtree className="h-6 w-6" />,
-      description: 'Relaxation, comfort, and peace of mind.'
+      value: 'nature',
+      label: 'Nature & Wildlife',
+      icon: <Mountain className="h-6 w-6" />,
+      description: 'National parks, wildlife viewing, and natural wonders.'
+    },
+    {
+      value: 'beach',
+      label: 'Beach',
+      icon: <Waves className="h-6 w-6" />,
+      description: 'Coastal activities, swimming, and sun bathing.'
+    },
+    {
+      value: 'culture',
+      label: 'Culture & History',
+      icon: <Landmark className="h-6 w-6" />,
+      description: 'Museums, historical sites, and local traditions.'
+    },
+    {
+      value: 'food',
+      label: 'Food & Dining',
+      icon: <UtensilsCrossed className="h-6 w-6" />,
+      description: 'Local cuisine, restaurants, and food markets.'
+    },
+    {
+      value: 'shopping',
+      label: 'Shopping',
+      icon: <ShoppingBag className="h-6 w-6" />,
+      description: 'Markets, malls, and local boutiques.'
+    },
+    {
+      value: 'wellness',
+      label: 'Wellness',
+      icon: <Crown className="h-6 w-6" />,
+      description: 'Spa, yoga, and relaxation activities.'
     },
     {
       value: 'romance',
@@ -34,17 +80,11 @@ const TripStyleStep: React.FC = () => {
       description: 'Intimate experiences for couples.'
     },
     {
-      value: 'culture',
-      label: 'Culture',
-      icon: <Building className="h-6 w-6" />,
-      description: 'Museums, history, and local experiences.'
-    },
-    {
       value: 'family',
       label: 'Family',
       icon: <Users className="h-6 w-6" />,
-      description: 'Fun for all ages, kid-friendly activities.'
-    }
+      description: 'Kid-friendly activities and family fun.'
+    },
   ];
   
   return (

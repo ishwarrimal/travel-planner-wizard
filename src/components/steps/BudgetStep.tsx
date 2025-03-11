@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTravelPlan } from '@/contexts/TravelPlanContext';
 import { BudgetLevel } from '@/contexts/TravelPlanContext';
@@ -17,15 +16,21 @@ const BudgetStep: React.FC = () => {
   
   const budgetOptions: BudgetOption[] = [
     {
-      value: 'budget',
-      label: 'Budget-Friendly',
-      description: 'Affordable options prioritizing value and essential experiences.',
+      value: 'ultra_budget',
+      label: 'Ultra Budget',
+      description: 'Prioritizes lowest cost over time (e.g., long bus/train rides over flights).',
       priceIndicator: '$'
+    },
+    {
+      value: 'smart_budget',
+      label: 'Smart Budget',
+      description: 'Balance between cost and time efficiency (e.g., budget flights when time-saving).',
+      priceIndicator: '$ ⏱️'
     },
     {
       value: 'moderate',
       label: 'Moderate',
-      description: 'Balance between cost and comfort with some premium experiences.',
+      description: 'Comfortable balance of convenience and cost with some premium experiences.',
       priceIndicator: '$$'
     },
     {
@@ -81,9 +86,10 @@ const BudgetStep: React.FC = () => {
       <div className="bg-muted p-4 rounded-lg">
         <h3 className="font-medium mb-2">Understanding budget levels:</h3>
         <ul className="space-y-1 text-sm text-muted-foreground">
-          <li><span className="font-medium">Budget-Friendly:</span> Hostels, public transportation, street food</li>
-          <li><span className="font-medium">Moderate:</span> 3-star hotels, mix of dining options, some guided tours</li>
-          <li><span className="font-medium">Luxury:</span> 4/5-star hotels, fine dining, premium experiences</li>
+          <li><span className="font-medium">Ultra Budget:</span> Hostels, longest but cheapest transport options, street food</li>
+          <li><span className="font-medium">Smart Budget:</span> Hostels/budget hotels, efficient budget transport, local eateries</li>
+          <li><span className="font-medium">Moderate:</span> 3-star hotels, convenient transport options, mix of dining choices</li>
+          <li><span className="font-medium">Luxury:</span> 4/5-star hotels, premium transport, fine dining</li>
         </ul>
       </div>
     </div>
