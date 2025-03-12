@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { TravelPlan, useTravelPlan } from '@/contexts/TravelPlanContext';
+import { ItineraryDay, TravelPlan, useTravelPlan } from '@/contexts/TravelPlanContext';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +15,19 @@ const categoryIcons = {
   'free-time': <Clock className="h-4 w-4" />
 };
 
+function generateBookingURL(destination, checkin) {
+  const checkout = new Date(checkin);
+  checkout.setDate(checkout.getDate() + 1);
+
+  const url = new URL("https://www.booking.com/searchresults.html");
+  url.searchParams.set("ss", destination);
+  url.searchParams.set("checkin_year", checkin.getFullYear());
+  url.searchParams.set("checkin_month", checkin.getMonth() + 1);
+  url.searchParams.set("checkin_monthday", checkin.getDate());
+
+  return url.toString();
+}
+
 const ItineraryStep: React.FC = () => {
   const { travelPlan, generateItinerary, isGenerating, error } = useTravelPlan();
   
@@ -24,16 +37,15 @@ const ItineraryStep: React.FC = () => {
     }
   }, []);
   
-  const ActivityCard: React.FC<{ activity: ItineraryActivity, day: TravelPlan }> = ({ activity, day }) => {
+  const ActivityCard: React.FC<{ activity: ItineraryActivity, day: ItineraryDay }> = ({ activity, day }) => {
     const getBookingButton = () => {
       if (activity.category === 'accommodation') {
-        const searchQuery = encodeURIComponent(`${activity.title} ${activity.location}`);
         return (
           <Button 
             variant="secondary" 
             size="sm" 
             className="mt-2"
-            onClick={() => window.open(`https://www.booking.com/search.html?ss=${searchQuery}&checkin=${day.startDate}&checkout=${day.endDate}`, '_blank')}
+            onClick={() => window.open(generateBookingURL(activity.location, day.date), '_blank')}
           >
             Book Hotel
           </Button>
