@@ -6,7 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, MapPin, Coffee, UtensilsCrossed, Car, Bed, Clock, DollarSign, Share2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ItineraryActivity } from '@/contexts/TravelPlanContext';
-import { getAnalytics, logEvent } from 'firebase/analytics';
+import { getAnalytics, logEvent } from 'firebase/analytics'
+import { FaWhatsapp, FaCopy } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
 
 const categoryIcons = {
   'food': <UtensilsCrossed className="h-4 w-4" />,
@@ -167,12 +169,21 @@ const ItineraryStep: React.FC = () => {
     message += `Create personalized AI-powered itineraries in seconds.\n`;
     message += `Visit: https://ishwarrimal.github.io/travel-planner-wizard/\n`;
 
-    return encodeURIComponent(message);
+    return message;
   };
 
   const shareViaWhatsApp = () => {
-    const formattedMessage = formatItineraryForShare();
+    const formattedMessage = encodeURIComponent(formatItineraryForShare());
     window.open(`https://wa.me/?text=${formattedMessage}`, '_blank');
+  };
+
+  const handleCopyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(formatItineraryForShare());
+      toast.success('Itinerary copied to clipboard!');
+    } catch (err) {
+      toast.error('Failed to copy to clipboard');
+    }
   };
 
   if (error) {
@@ -240,15 +251,24 @@ const ItineraryStep: React.FC = () => {
             with a {travelPlan.budgetLevel} budget.
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-2"
-          onClick={shareViaWhatsApp}
-        >
-          <Share2 className="h-4 w-4" />
-          Share via WhatsApp
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={shareViaWhatsApp}
+          >
+            <FaWhatsapp /> Share via WhatsApp
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleCopyToClipboard}
+          >
+            <FaCopy /> Copy to Clipboard
+          </Button>
+        </div>
       </div>
       
       <Tabs defaultValue={`day-1`} className="w-full">

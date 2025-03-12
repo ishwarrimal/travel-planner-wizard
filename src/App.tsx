@@ -8,6 +8,7 @@ import { getAnalytics } from 'firebase/analytics';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { usePageTracking } from "@/hooks/usePageTracking";
+import { Toaster as HotToaster } from 'react-hot-toast';
 
 // Your Firebase configuration object
 const firebaseConfig = {
@@ -43,6 +44,16 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <HotToaster 
+          position="bottom-center"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#333',
+              color: '#fff',
+            },
+          }}
+        />
         <BrowserRouter basename="/travel-planner-wizard">
           <PageTracking />
           <Routes>
