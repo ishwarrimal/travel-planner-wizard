@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, MapPin, Coffee, UtensilsCrossed, Car, Bed, Clock, DollarSign, Share2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ItineraryActivity } from '@/contexts/TravelPlanContext';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 
 const categoryIcons = {
   'food': <UtensilsCrossed className="h-4 w-4" />,
@@ -15,18 +16,14 @@ const categoryIcons = {
   'free-time': <Clock className="h-4 w-4" />
 };
 
-function generateBookingURL(destination, checkin) {
-  const checkout = new Date(checkin);
-  checkout.setDate(checkout.getDate() + 1);
+function generateBookingURL() {
 
-  const url = new URL("https://www.booking.com/searchresults.html");
-  url.searchParams.set("ss", destination);
-  url.searchParams.set("checkin_year", checkin.getFullYear());
-  url.searchParams.set("checkin_month", checkin.getMonth() + 1);
-  url.searchParams.set("checkin_monthday", checkin.getDate());
+  const url = new URL("http://www.awin1.com/awclick.php?mid=18117&id=1879540");
 
   return url.toString();
 }
+
+const environment = import.meta.env.DEV ? 'development' : 'production';
 
 const ItineraryStep: React.FC = () => {
   const { travelPlan, generateItinerary, isGenerating, error } = useTravelPlan();
@@ -45,7 +42,17 @@ const ItineraryStep: React.FC = () => {
             variant="secondary" 
             size="sm" 
             className="mt-2"
-            onClick={() => window.open(generateBookingURL(activity.location, day.date), '_blank')}
+            onClick={() => {
+              const analytics = getAnalytics();
+              logEvent(analytics, 'book_hotel_click', {
+                hotel_name: activity.title,
+                day_number: day.day,
+                date: format(day.date, 'yyyy-MM-dd'),
+                destination: travelPlan.destination,
+                environment: environment
+              });
+              window.open(generateBookingURL(), '_blank');
+            }}
           >
             Book Hotel
           </Button>
@@ -58,7 +65,18 @@ const ItineraryStep: React.FC = () => {
             variant="secondary" 
             size="sm" 
             className="mt-2"
-            onClick={() => window.open('https://www.skyscanner.com', '_blank')}
+            onClick={() => {
+              const analytics = getAnalytics();
+              logEvent(analytics, 'book_transport_click', {
+                transport_type: type,
+                transport_name: activity.title,
+                day_number: day.day,
+                date: format(day.date, 'yyyy-MM-dd'),
+                destination: travelPlan.destination,
+                environment: environment
+              });
+              window.open('https://www.skyscanner.com', '_blank');
+            }}
           >
             Book {type}
           </Button>
