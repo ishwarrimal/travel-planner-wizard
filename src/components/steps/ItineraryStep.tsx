@@ -163,9 +163,9 @@ const ItineraryStep: React.FC = () => {
     });
 
     message += `=================\n`;
-    message += `Plan your own perfect trip at TripPlanner.ai!\n`;
+    message += `Plan your own perfect trip at ishwarrimal.github.io/travel-planner-wizard/!\n`;
     message += `Create personalized AI-powered itineraries in seconds.\n`;
-    message += `Visit: https://tripplanner.ai\n`;
+    message += `Visit: https://ishwarrimal.github.io/travel-planner-wizard/\n`;
 
     return encodeURIComponent(message);
   };
