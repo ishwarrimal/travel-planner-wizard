@@ -60,6 +60,23 @@ const ItineraryStep: React.FC = () => {
       }
       if (activity.category.includes('transportation')) {
         const type = activity.category.split('-')[1]
+        let url;
+        switch(type){
+          case 'cab':
+            url = 'https://www.skyscanner.co.in/carhire';
+            break;
+          case 'flight':
+            url = 'https://www.skyscanner.co.in/flights';
+            break;
+          case 'bus':
+            url = 'https://www.goibibo.com/bus/';
+            break;
+          case 'train':
+            url = 'https://www.goibibo.com/trains/';
+            break;
+          default:
+            url = 'https://www.skyscanner.co.in/'
+        }
         return (
           <Button 
             variant="secondary" 
@@ -75,7 +92,7 @@ const ItineraryStep: React.FC = () => {
                 destination: travelPlan.destination,
                 environment: environment
               });
-              window.open('https://www.skyscanner.com', '_blank');
+              window.open(url, '_blank');
             }}
           >
             Book {type}
