@@ -61,7 +61,7 @@ export class GeminiService {
                 "time": "HH:mm",
                 "title": "Activity Title",
                 "description": "Detailed description",
-                "location": "Location name",
+                "location": "Bangalore",
                 "cost": "10$", "120$", 
                 "category": "food", "activity", "transportation-train", "transportation-flight", "transportation-cab", "transportation-bus", "accommodation", or "free-time",
               }
