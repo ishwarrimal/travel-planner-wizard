@@ -11,7 +11,7 @@ export interface TravelPlan {
   arrivalTime?: string;
   departureTime?: string;
   numberOfDays: number;
-  tripStyle: TripStyle;
+  tripStyle: TripStyle[];
   budgetLevel: BudgetLevel;
   interests: string[];
   itinerary: ItineraryDay[];
@@ -41,7 +41,7 @@ interface TravelPlanContextType {
     arrivalTime?: string,
     departureTime?: string
   ) => void;
-  updateTripStyle: (style: TripStyle) => void;
+  updateTripStyle: (styles: TripStyle[]) => void;
   updateBudgetLevel: (level: BudgetLevel) => void;
   updateInterests: (interests: string[]) => void;
   generateItinerary: () => void;
@@ -61,7 +61,7 @@ const defaultTravelPlan: TravelPlan = {
   arrivalTime: undefined,
   departureTime: undefined,
   numberOfDays: 0,
-  tripStyle: 'sightseeing',
+  tripStyle: ['sightseeing'],
   budgetLevel: 'moderate',
   interests: [],
   itinerary: [],
@@ -107,8 +107,8 @@ export const TravelPlanProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
 
-  const updateTripStyle = (tripStyle: TripStyle) => {
-    setTravelPlan(prev => ({ ...prev, tripStyle }));
+  const updateTripStyle = (tripStyle: TripStyle[]) => {
+    setTravelPlan(prev => ({ ...prev, tripStyle}));
   };
 
   const updateBudgetLevel = (budgetLevel: BudgetLevel) => {

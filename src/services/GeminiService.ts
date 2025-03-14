@@ -32,7 +32,7 @@ export class GeminiService {
   static async generateItinerary(travelDetails: {
     destination: string;
     numberOfDays: number;
-    tripStyle: string;
+    tripStyle: string[];
     budgetLevel: string;
     startDate: Date;
     endDate: Date;
@@ -79,7 +79,7 @@ export class GeminiService {
         ? `Departure on the last day is at ${travelDetails.departureTime}.` 
         : '';
 
-      const userPrompt = `Create a detailed ${travelDetails.numberOfDays}-day itinerary for a ${travelDetails.tripStyle} trip to ${travelDetails.destination} with a ${travelDetails.budgetLevel} budget. 
+      const userPrompt = `Create a detailed ${travelDetails.numberOfDays}-day itinerary for a trip of type ${travelDetails.tripStyle.join(',')} to ${travelDetails.destination} with a ${travelDetails.budgetLevel} budget. 
       The trip starts on ${travelDetails.startDate.toISOString().split('T')[0]} and ends on ${travelDetails.endDate.toISOString().split('T')[0]}. 
       ${arrivalInfo} ${departureInfo}
       ${travelDetails.interests.length > 0 ? `The traveler is interested in: ${travelDetails.interests.join(', ')}.` : ''}

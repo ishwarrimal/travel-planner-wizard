@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTravelPlan } from '@/contexts/TravelPlanContext';
 import { TripStyle } from '@/contexts/TravelPlanContext';
 import { 
@@ -11,7 +11,8 @@ import {
   Mountain, 
   ShoppingBag, 
   Landmark,
-  Waves
+  Waves,
+  AlertCircle
 } from 'lucide-react';
 
 interface TripStyleOption {
@@ -23,6 +24,12 @@ interface TripStyleOption {
 
 const TripStyleStep: React.FC = () => {
   const { travelPlan, updateTripStyle } = useTravelPlan();
+  const [selectedStyles, setSelectedStyles] = React.useState<TripStyle[]>(
+    travelPlan.tripStyle || []
+  );
+  const [error, setError] = React.useState<string | null>(null);
+  
+  const MAX_SELECTIONS = 3;
   
   const tripStyleOptions: TripStyleOption[] = [
     {
@@ -87,13 +94,50 @@ const TripStyleStep: React.FC = () => {
     },
   ];
   
+  const handleStyleToggle = (style: TripStyle) => {
+    setError(null);
+    
+    if (selectedStyles.includes(style)) {
+      // Remove the style if already selected
+      setSelectedStyles(selectedStyles.filter(s => s !== style));
+    } else {
+      // Add the style if not at max selections
+      if (selectedStyles.length < MAX_SELECTIONS) {
+        setSelectedStyles([...selectedStyles, style]);
+      } else {
+        setError(`You can select up to ${MAX_SELECTIONS} travel styles`);
+      }
+    }
+  };
+
+  useEffect(() => {
+    updateTripStyle(selectedStyles)
+  }, [selectedStyles])
+
+  
   return (
     <div className="space-y-6 animate-fadeIn">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">What's your travel style?</h2>
         <p className="text-muted-foreground">
-          Choose the style that best fits your trip to {travelPlan.destination || "your destination"}.
+          Choose up to 3 styles that best fit your trip to {travelPlan.destination || "your destination"}.
         </p>
+        {selectedStyles.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <span className="text-sm font-medium">Selected:</span>
+            {selectedStyles.map((style) => (
+              <span key={style} className="text-sm bg-primary/10 text-primary px-2 py-1 rounded-full">
+                {tripStyleOptions.find(option => option.value === style)?.label}
+              </span>
+            ))}
+          </div>
+        )}
+        {error && (
+          <div className="mt-2 flex items-center text-red-500 text-sm">
+            <AlertCircle className="h-4 w-4 mr-1" />
+            {error}
+          </div>
+        )}
       </div>
       
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -102,17 +146,17 @@ const TripStyleStep: React.FC = () => {
             key={option.value}
             className={`
               rounded-xl border p-4 cursor-pointer transition-all hover:shadow-md
-              ${travelPlan.tripStyle === option.value 
+              ${selectedStyles.includes(option.value) 
                 ? 'border-primary bg-primary/5' 
                 : 'border-gray-200 hover:border-gray-300'
               }
             `}
-            onClick={() => updateTripStyle(option.value)}
+            onClick={() => handleStyleToggle(option.value)}
           >
             <div className="flex items-center">
               <div className={`
                 rounded-full p-2 mr-3
-                ${travelPlan.tripStyle === option.value 
+                ${selectedStyles.includes(option.value) 
                   ? 'bg-primary text-white' 
                   : 'bg-muted'
                 }

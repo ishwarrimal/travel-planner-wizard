@@ -223,7 +223,7 @@ const ItineraryStep: React.FC = () => {
         <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
         <h3 className="text-xl font-medium mb-2">Crafting your perfect itinerary...</h3>
         <p className="text-center text-muted-foreground max-w-md">
-          We're creating a personalized {travelPlan.numberOfDays}-day {travelPlan.tripStyle} itinerary
+          We're creating a personalized {travelPlan.numberOfDays}-day {travelPlan.tripStyle.join(' | ')} itinerary
           for your trip to {travelPlan.destination} with a {travelPlan.budgetLevel} budget.
         </p>
       </div>
@@ -247,9 +247,16 @@ const ItineraryStep: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Your {travelPlan.numberOfDays}-Day Itinerary</h2>
           <p className="text-muted-foreground">
-            {travelPlan.tripStyle.charAt(0).toUpperCase() + travelPlan.tripStyle.slice(1)} trip to {travelPlan.destination} 
-            with a {travelPlan.budgetLevel} budget.
-          </p>
+          {travelPlan.tripStyle.map((style, index) => (
+            <>
+              {style.charAt(0).toUpperCase() + style.slice(1)}
+              {index < travelPlan.tripStyle.length - 1 && (
+                index === travelPlan.tripStyle.length - 2 ? ' and ' : ', '
+              )}
+            </>
+          ))} 
+          trip to {travelPlan.destination} with a {travelPlan.budgetLevel} budget.
+        </p>
         </div>
         <div className="flex gap-2">
           <Button
